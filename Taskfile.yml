@@ -1,0 +1,47 @@
+version: '3'
+
+tasks:
+  default:
+    desc: List all available tasks
+    cmds:
+      - task --list
+
+  build:
+    desc: Build the application binary
+    cmds:
+      - go build -o api cmd/api/main.go
+
+  run:
+    desc: Run the application locally
+    cmds:
+      - go run cmd/api/main.go
+
+  docker-run:
+    desc: Spin up the docker containers in the background
+    cmds:
+      - docker compose up -d
+
+  docker-down:
+    desc: Shut down the docker containers
+    cmds:
+      - docker compose down
+
+  itest:
+    desc: Run database integration tests
+    cmds:
+      - go test -v ./internal/database
+
+  watch:
+    desc: Live reload the application using Air
+    cmds:
+      - air
+
+  test:
+    desc: Run the full Go test suite
+    cmds:
+      - go test -v ./...
+
+  clean:
+    desc: Clean up build artifacts
+    cmds:
+      - go clean

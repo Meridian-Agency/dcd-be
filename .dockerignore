@@ -1,0 +1,7 @@
+.git
+.github
+tmp
+bin
+.env
+docker-compose.yml
+.dockerignore
