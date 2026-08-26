@@ -37,8 +37,9 @@ type Booking struct {
 	VehicleModel  string         `gorm:"not null" json:"vehicle_model"`
 	VehicleSize   string         `gorm:"not null" json:"vehicle_size"`
 	PreferredDate time.Time      `gorm:"not null" json:"preferred_date"`
-	EstimatedCost float64        `gorm:"type:decimal(10,2)" json:"estimated_cost"`
-	Notes         string         `json:"notes,omitempty"`
+	EstimatedCost         float64        `gorm:"type:decimal(10,2)" json:"estimated_cost"`
+	StripePaymentIntentID string         `gorm:"uniqueIndex" json:"stripe_payment_intent_id,omitempty"`
+	Notes                 string         `json:"notes,omitempty"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `gorm:"index" json:"-"`
