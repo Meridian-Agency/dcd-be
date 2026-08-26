@@ -11,20 +11,22 @@ import (
 )
 
 type Server struct {
-	cfg             *config.Config
-	db              database.Service
-	bookingService  service.BookingService
-	coverageService service.CoverageService
+	cfg                   *config.Config
+	db                    database.Service
+	bookingService        service.BookingService
+	coverageService       service.CoverageService
+	servicePackageService service.ServicePackageService
 }
 
 func NewServer(cfg *config.Config) *http.Server {
 	dbService := database.New(cfg)
 
 	s := &Server{
-		cfg:             cfg,
-		db:              dbService,
-		bookingService:  service.NewBookingService(dbService),
-		coverageService: service.NewCoverageService(),
+		cfg:                   cfg,
+		db:                    dbService,
+		bookingService:        service.NewBookingService(dbService),
+		coverageService:       service.NewCoverageService(),
+		servicePackageService: service.NewServicePackageService(dbService),
 	}
 
 	server := &http.Server{

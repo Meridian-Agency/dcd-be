@@ -18,9 +18,15 @@ func main() {
 	dbService := database.New(cfg)
 
 	log.Println("Running auto-migrations...")
-	if err := database.Migrate(dbService.GetDB(context.Background())); err != nil {
+	db := dbService.GetDB(context.Background())
+	if err := database.Migrate(db); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 
-	log.Println("Database migration completed successfully!")
+	log.Println("Seeding services...")
+	if err := database.SeedServices(db); err != nil {
+		log.Fatalf("Seeding failed: %v", err)
+	}
+
+	log.Println("Database migration and seeding completed successfully!")
 }
