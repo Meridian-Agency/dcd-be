@@ -44,7 +44,7 @@ func New(cfg *config.Config) Service {
 }
 
 func Migrate(db *gorm.DB) error {
-	return db.AutoMigrate(&ServicePackage{}, &Booking{})
+	return db.AutoMigrate(&ServicePackage{}, &Reservation{})
 }
 
 func (s *service) GetDB(ctx context.Context) *gorm.DB {

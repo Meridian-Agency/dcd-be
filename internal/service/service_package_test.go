@@ -103,7 +103,7 @@ func setupTestDB(t *testing.T) database.Service {
 	}
 
 	// Clean up / truncate tables if they exist
-	db.Exec("DROP TABLE IF EXISTS bookings")
+	db.Exec("DROP TABLE IF EXISTS reservations")
 	db.Exec("DROP TABLE IF EXISTS service_packages")
 
 	err = database.Migrate(db)

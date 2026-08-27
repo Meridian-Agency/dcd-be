@@ -20,6 +20,7 @@ type Config struct {
 	StripeSecretKey     string `env:"STRIPE_SECRET_KEY,required"`
 	StripeWebhookSecret string `env:"STRIPE_WEBHOOK_SECRET"`
 	StripeCurrency      string `env:"STRIPE_CURRENCY" envDefault:"gbp"`
+	AdminAPIKey         string `env:"ADMIN_API_KEY" envDefault:"dcd-admin-secret"`
 }
 
 func Load() (*Config, error) {
