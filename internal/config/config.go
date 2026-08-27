@@ -14,9 +14,6 @@ type Config struct {
 	DBUsername      string `env:"DB_USERNAME,required"`
 	DBPassword      string `env:"DB_PASSWORD,required" json:"-"`
 	DBSchema        string `env:"DB_SCHEMA" envDefault:"public"`
-	SMTPHost        string `env:"SMTP_HOST" envDefault:"mailpit"`
-	SMTPPort        int    `env:"SMTP_PORT" envDefault:"1025"`
-	S3Endpoint          string `env:"S3_ENDPOINT" envDefault:"http://minio:9000"`
 	AdminAPIKey         string `env:"ADMIN_API_KEY" envDefault:"dcd-admin-secret"`
 }
 
