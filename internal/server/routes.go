@@ -30,8 +30,30 @@ func (s *Server) RegisterRoutes() http.Handler {
 		v1.GET("/coverage/check", s.checkCoverageHandler)
 		v1.GET("/services", s.listServicesHandler)
 		v1.GET("/services/:slug", s.getServiceBySlugHandler)
-		v1.POST("/bookings", s.createBookingHandler)
+
+		// Reservation routes
+		v1.POST("/reservations", s.createReservationHandler)
+		v1.GET("/reservations", s.listReservationsHandler)
+
+		// Admin reservation routes
+		admin := v1.Group("/admin")
+		admin.Use(s.adminAuthMiddleware())
+		{
+			admin.GET("/reservations", s.listAdminReservationsHandler)
+		}
 	}
 
 	return r
+}
+
+func (s *Server) adminAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := c.GetHeader("Authorization")
+		expectedToken := "Bearer " + s.cfg.AdminAPIKey
+		if token != expectedToken {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+		c.Next()
+	}
 }

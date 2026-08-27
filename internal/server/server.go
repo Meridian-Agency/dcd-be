@@ -13,7 +13,7 @@ import (
 type Server struct {
 	cfg                   *config.Config
 	db                    database.Service
-	bookingService        service.BookingService
+	reservationService    service.ReservationService
 	coverageService       service.CoverageService
 	servicePackageService service.ServicePackageService
 }
@@ -24,7 +24,7 @@ func NewServer(cfg *config.Config) *http.Server {
 	s := &Server{
 		cfg:                   cfg,
 		db:                    dbService,
-		bookingService:        service.NewBookingService(dbService),
+		reservationService:    service.NewReservationService(dbService),
 		coverageService:       service.NewCoverageService(),
 		servicePackageService: service.NewServicePackageService(dbService),
 	}
