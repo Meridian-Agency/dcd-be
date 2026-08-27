@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"net/url"
 
 	"dcd-be/internal/config"
 	"dcd-be/internal/server"
@@ -19,5 +20,12 @@ func init() {
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
+	// Restore the original path so Gin can route correctly
+	if matchedPath := r.Header.Get("X-Matched-Path"); matchedPath != "" {
+		r.URL.Path = matchedPath
+	} else if u, err := url.Parse(r.RequestURI); err == nil {
+		r.URL.Path = u.Path
+	}
+
 	app.ServeHTTP(w, r)
 }
