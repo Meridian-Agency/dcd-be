@@ -23,7 +23,6 @@ services:
       - SMTP_HOST=mailpit
       - SMTP_PORT=1025
       - S3_ENDPOINT=http://minio:9000
-      - WHATSAPP_MOCK_URL=http://whatsapp-mock:3000/api/messages
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
       - STRIPE_CURRENCY=${STRIPE_CURRENCY}
@@ -82,29 +81,6 @@ services:
     networks:
       - dcd_network
 
-  # WhatsApp Local Mock
-  whatsapp-mock:
-    image: node:20-alpine
-    container_name: dcd_whatsapp_mock
-    restart: unless-stopped
-    working_dir: /mock
-    ports:
-      - "3001:3000"
-    command: >
-      sh -c 'npm init -y && 
-             npm install express && 
-             node -e "
-               const express = require(\"express\");
-               const app = express();
-               app.use(express.json());
-               app.post(\"/api/messages\", (req, res) => {
-                 console.log(\"\n📱 [DCD WHATSAPP DISPATCH]:\", JSON.stringify(req.body, null, 2));
-                 res.status(200).json({ status: \"sent\", id: Date.now() });
-               });
-               app.listen(3000, () => console.log(\"WhatsApp mock running on :3000\"));
-             "'
-    networks:
-      - dcd_network
 
 networks:
   dcd_network:

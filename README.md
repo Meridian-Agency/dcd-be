@@ -1,6 +1,6 @@
 # Project dcd-be
 
-DCD Backend service built with Go, Gin, GORM, PostgreSQL, and Docker Compose. It features live-reloading (via Air), local email testing (via Mailpit), local S3-compatible object storage (via MinIO), and a mock WhatsApp dispatch service.
+DCD Backend service built with Go, Gin, GORM, PostgreSQL, and Docker Compose. It features live-reloading (via Air), local email testing (via Mailpit), and local S3-compatible object storage (via MinIO).
 
 ## Getting Started
 
@@ -48,7 +48,7 @@ task test
 
 ### Development & Docker Services
 
-Spin up the local docker container services (PostgreSQL, MinIO, Mailpit, WhatsApp Mock) in the background:
+Spin up the local docker container services (PostgreSQL, MinIO, Mailpit) in the background:
 ```bash
 task docker-run
 ```

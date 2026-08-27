@@ -17,7 +17,6 @@ type Config struct {
 	SMTPHost        string `env:"SMTP_HOST" envDefault:"mailpit"`
 	SMTPPort        int    `env:"SMTP_PORT" envDefault:"1025"`
 	S3Endpoint          string `env:"S3_ENDPOINT" envDefault:"http://minio:9000"`
-	WhatsAppMockURL     string `env:"WHATSAPP_MOCK_URL" envDefault:"http://whatsapp-mock:3000/api/messages"`
 	StripeSecretKey     string `env:"STRIPE_SECRET_KEY,required"`
 	StripeWebhookSecret string `env:"STRIPE_WEBHOOK_SECRET"`
 	StripeCurrency      string `env:"STRIPE_CURRENCY" envDefault:"gbp"`
