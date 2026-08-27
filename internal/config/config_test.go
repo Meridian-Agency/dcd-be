@@ -5,16 +5,14 @@ import (
 	"testing"
 )
 
-func TestLoad_Stripe(t *testing.T) {
+func TestLoad(t *testing.T) {
 	// Set test environment variables
 	os.Setenv("PORT", "9999")
 	os.Setenv("DB_HOST", "localhost")
 	os.Setenv("DB_DATABASE", "test")
 	os.Setenv("DB_USERNAME", "test")
 	os.Setenv("DB_PASSWORD", "test")
-	os.Setenv("STRIPE_SECRET_KEY", "sk_test_123")
-	os.Setenv("STRIPE_WEBHOOK_SECRET", "whsec_123")
-	os.Setenv("STRIPE_CURRENCY", "gbp")
+	os.Setenv("ADMIN_API_KEY", "test-secret")
 
 	defer func() {
 		os.Unsetenv("PORT")
@@ -22,9 +20,7 @@ func TestLoad_Stripe(t *testing.T) {
 		os.Unsetenv("DB_DATABASE")
 		os.Unsetenv("DB_USERNAME")
 		os.Unsetenv("DB_PASSWORD")
-		os.Unsetenv("STRIPE_SECRET_KEY")
-		os.Unsetenv("STRIPE_WEBHOOK_SECRET")
-		os.Unsetenv("STRIPE_CURRENCY")
+		os.Unsetenv("ADMIN_API_KEY")
 	}()
 
 	cfg, err := Load()
@@ -32,13 +28,13 @@ func TestLoad_Stripe(t *testing.T) {
 		t.Fatalf("failed to load config: %v", err)
 	}
 
-	if cfg.StripeSecretKey != "sk_test_123" {
-		t.Errorf("expected StripeSecretKey to be 'sk_test_123', got %s", cfg.StripeSecretKey)
+	if cfg.Port != 9999 {
+		t.Errorf("expected Port to be 9999, got %d", cfg.Port)
 	}
-	if cfg.StripeWebhookSecret != "whsec_123" {
-		t.Errorf("expected StripeWebhookSecret to be 'whsec_123', got %s", cfg.StripeWebhookSecret)
+	if cfg.DBHost != "localhost" {
+		t.Errorf("expected DBHost to be 'localhost', got %s", cfg.DBHost)
 	}
-	if cfg.StripeCurrency != "gbp" {
-		t.Errorf("expected StripeCurrency to be 'gbp', got %s", cfg.StripeCurrency)
+	if cfg.AdminAPIKey != "test-secret" {
+		t.Errorf("expected AdminAPIKey to be 'test-secret', got %s", cfg.AdminAPIKey)
 	}
 }

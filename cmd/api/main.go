@@ -44,8 +44,6 @@ func main() {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	config.InitStripe(cfg)
-
 	server := server.NewServer(cfg)
 
 	// Create a done channel to signal when the shutdown is complete

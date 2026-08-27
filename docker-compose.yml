@@ -23,9 +23,6 @@ services:
       - SMTP_HOST=mailpit
       - SMTP_PORT=1025
       - S3_ENDPOINT=http://minio:9000
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
-      - STRIPE_CURRENCY=${STRIPE_CURRENCY}
     depends_on:
       psql_bp:
         condition: service_healthy
