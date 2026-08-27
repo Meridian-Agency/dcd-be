@@ -28,6 +28,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 		v1.GET("/health", s.healthHandler)
 		v1.GET("/ping", s.pingHandler)
 		v1.GET("/coverage/check", s.checkCoverageHandler)
+		v1.GET("/services", s.listServicesHandler)
+		v1.GET("/services/:slug", s.getServiceBySlugHandler)
 		v1.POST("/bookings", s.createBookingHandler)
 	}
 

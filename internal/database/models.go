@@ -15,13 +15,16 @@ const (
 )
 
 type ServicePackage struct {
-	ID          uint      `gorm:"primaryKey" json:"id"`
-	Slug        string    `gorm:"uniqueIndex;not null" json:"slug"`
-	Name        string    `gorm:"not null" json:"name"`
-	Category    string    `json:"category"`
-	BasePrice   float64   `gorm:"type:decimal(10,2);not null" json:"base_price"`
-	DurationMin int       `json:"duration_min"`
-	CreatedAt   time.Time `json:"created_at"`
+	ID          uint             `gorm:"primaryKey" json:"id"`
+	ParentID    *uint            `json:"parent_id,omitempty"`
+	Slug        string           `gorm:"uniqueIndex;not null" json:"slug"`
+	Name        string           `gorm:"not null" json:"name"`
+	Category    string           `json:"category"`
+	BasePrice   float64          `gorm:"type:decimal(10,2);not null" json:"base_price"`
+	DurationMin int              `json:"duration_min"`
+	Description string           `json:"description,omitempty"`
+	Subtypes    []ServicePackage `gorm:"foreignKey:ParentID" json:"subtypes,omitempty"`
+	CreatedAt   time.Time        `json:"created_at"`
 }
 
 type Booking struct {
