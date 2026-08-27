@@ -42,37 +42,7 @@ paths:
                     type: string
                     example: pong
 
-  /coverage/check:
-    get:
-      summary: Check postcode coverage
-      description: Verifies if DCD provides mobile detailing services at a given postcode.
-      parameters:
-        - name: postcode
-          in: query
-          required: true
-          description: Postcode to verify coverage for (e.g. "AB10 1AA")
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Coverage check result
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  postcode:
-                    type: string
-                    example: AB10 1AA
-                  covered:
-                    type: boolean
-                    example: true
-        '400':
-          description: Missing or invalid postcode
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+
 
   /services:
     get:

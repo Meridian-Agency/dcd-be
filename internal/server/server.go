@@ -14,7 +14,6 @@ type Server struct {
 	cfg                   *config.Config
 	db                    database.Service
 	reservationService    service.ReservationService
-	coverageService       service.CoverageService
 	servicePackageService service.ServicePackageService
 }
 
@@ -25,7 +24,6 @@ func NewServer(cfg *config.Config) *http.Server {
 		cfg:                   cfg,
 		db:                    dbService,
 		reservationService:    service.NewReservationService(dbService),
-		coverageService:       service.NewCoverageService(),
 		servicePackageService: service.NewServicePackageService(dbService),
 	}
 
