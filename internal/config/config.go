@@ -14,7 +14,8 @@ type Config struct {
 	DBUsername      string `env:"DB_USERNAME,required"`
 	DBPassword      string `env:"DB_PASSWORD,required" json:"-"`
 	DBSchema        string `env:"DB_SCHEMA" envDefault:"public"`
-	AdminAPIKey         string `env:"ADMIN_API_KEY" envDefault:"dcd-admin-secret"`
+	DBSSLMode       string `env:"DB_SSLMODE" envDefault:"disable"`
+	AdminAPIKey     string `env:"ADMIN_API_KEY" envDefault:"dcd-admin-secret"`
 }
 
 func Load() (*Config, error) {

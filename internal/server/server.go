@@ -17,7 +17,7 @@ type Server struct {
 	servicePackageService service.ServicePackageService
 }
 
-func NewServer(cfg *config.Config) *http.Server {
+func NewHandler(cfg *config.Config) http.Handler {
 	dbService := database.New(cfg)
 
 	s := &Server{
@@ -27,9 +27,15 @@ func NewServer(cfg *config.Config) *http.Server {
 		servicePackageService: service.NewServicePackageService(dbService),
 	}
 
+	return s.RegisterRoutes()
+}
+
+func NewServer(cfg *config.Config) *http.Server {
+	handler := NewHandler(cfg)
+
 	server := &http.Server{
-		Addr:         fmt.Sprintf(":%d", s.cfg.Port),
-		Handler:      s.RegisterRoutes(),
+		Addr:         fmt.Sprintf(":%d", cfg.Port),
+		Handler:      handler,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
