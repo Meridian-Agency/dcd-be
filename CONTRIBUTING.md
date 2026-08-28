@@ -4,6 +4,12 @@ Welcome to the **dcd-be** backend service repository! This guide will help you g
 
 ---
 
+## API Documentation & Playground
+We use **Apidog** for interactive API documentation, schema references, and client-side mocking:
+* **Interactive API Docs**: `https://74upocjbme.apidog.io/`
+
+---
+
 ## 1. Quick Start Local Setup
 
 ### Prerequisites
