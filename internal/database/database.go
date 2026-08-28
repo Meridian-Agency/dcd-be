@@ -39,6 +39,13 @@ func New(cfg *config.Config) Service {
 		log.Fatal(err)
 	}
 
+	sqlDB, err := db.DB()
+	if err == nil {
+		sqlDB.SetMaxIdleConns(10)
+		sqlDB.SetMaxOpenConns(100)
+		sqlDB.SetConnMaxLifetime(time.Hour)
+	}
+
 	dbInstance = &service{db: db}
 	return dbInstance
 }

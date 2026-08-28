@@ -1,24 +1,66 @@
 package server
 
 import (
+	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
-func (s *Server) RegisterRoutes() http.Handler {
-	r := gin.Default()
+func RequestIDMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		reqID := c.GetHeader("X-Request-ID")
+		if reqID == "" {
+			reqID = uuid.NewString()
+		}
+		c.Set("RequestID", reqID)
+		c.Header("X-Request-ID", reqID)
+		c.Next()
+	}
+}
 
-	// Centralized Error Handling Middleware
+func LoggerMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		start := time.Now()
+		path := c.Request.URL.Path
+		query := c.Request.URL.RawQuery
+
+		c.Next()
+
+		end := time.Now()
+		latency := end.Sub(start)
+
+		reqIDVal, _ := c.Get("RequestID")
+		reqID, _ := reqIDVal.(string)
+
+		slog.InfoContext(c.Request.Context(), "HTTP request processed",
+			slog.String("method", c.Request.Method),
+			slog.String("path", path),
+			slog.String("query", query),
+			slog.Int("status", c.Writer.Status()),
+			slog.String("ip", c.ClientIP()),
+			slog.Duration("latency", latency),
+			slog.String("request_id", reqID),
+		)
+	}
+}
+
+func (s *Server) RegisterRoutes() http.Handler {
+	r := gin.New()
+
+	r.Use(RequestIDMiddleware())
+	r.Use(LoggerMiddleware())
+	r.Use(gin.Recovery())
 	r.Use(ErrorHandler())
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://demon-car-detailing-phi.vercel.app", "http://localhost:3000"},
+		AllowOrigins:     s.cfg.AllowedOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Request-ID"},
+		ExposeHeaders:    []string{"Content-Length", "X-Request-ID"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))

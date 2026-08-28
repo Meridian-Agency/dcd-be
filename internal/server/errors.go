@@ -1,7 +1,7 @@
 package server
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -37,13 +37,17 @@ func ErrorHandler() gin.HandlerFunc {
 
 			if appErr, ok := err.(*AppError); ok {
 				if appErr.Err != nil {
-					log.Printf("[ERROR] %d: %s | %v", appErr.Code, appErr.Message, appErr.Err)
+					slog.Error("App error occurred",
+						slog.Int("code", appErr.Code),
+						slog.String("message", appErr.Message),
+						slog.Any("error", appErr.Err),
+					)
 				}
 				c.JSON(appErr.Code, gin.H{"error": appErr.Message})
 				return
 			}
 
-			log.Printf("[UNEXPECTED ERROR] %v", err)
+			slog.Error("Unexpected internal error occurred", slog.Any("error", err))
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "An unexpected error occurred."})
 		}
 	}

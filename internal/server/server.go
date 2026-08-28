@@ -17,9 +17,7 @@ type Server struct {
 	servicePackageService service.ServicePackageService
 }
 
-func NewHandler(cfg *config.Config) http.Handler {
-	dbService := database.New(cfg)
-
+func NewHandler(cfg *config.Config, dbService database.Service) http.Handler {
 	s := &Server{
 		cfg:                   cfg,
 		db:                    dbService,
@@ -30,8 +28,8 @@ func NewHandler(cfg *config.Config) http.Handler {
 	return s.RegisterRoutes()
 }
 
-func NewServer(cfg *config.Config) *http.Server {
-	handler := NewHandler(cfg)
+func NewServer(cfg *config.Config, dbService database.Service) *http.Server {
+	handler := NewHandler(cfg, dbService)
 
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Port),

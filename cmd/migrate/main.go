@@ -2,7 +2,8 @@ package main
 
 import (
 	"context"
-	"log"
+	"log/slog"
+	"os"
 
 	"dcd-be/internal/config"
 	"dcd-be/internal/database"
@@ -11,22 +12,29 @@ import (
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
+		slog.Error("Failed to load config", slog.Any("error", err))
+		os.Exit(1)
 	}
 
-	log.Printf("Connecting to database: %s:%d/%s", cfg.DBHost, cfg.DBPort, cfg.DBDatabase)
+	slog.Info("Connecting to database",
+		slog.String("host", cfg.DBHost),
+		slog.Int("port", cfg.DBPort),
+		slog.String("database", cfg.DBDatabase),
+	)
 	dbService := database.New(cfg)
 
-	log.Println("Running auto-migrations...")
+	slog.Info("Running database migrations...")
 	db := dbService.GetDB(context.Background())
-	if err := database.Migrate(db); err != nil {
-		log.Fatalf("Migration failed: %v", err)
+	if err := database.RunMigrations(db); err != nil {
+		slog.Error("Migration failed", slog.Any("error", err))
+		os.Exit(1)
 	}
 
-	log.Println("Seeding services...")
+	slog.Info("Seeding services...")
 	if err := database.SeedServices(db); err != nil {
-		log.Fatalf("Seeding failed: %v", err)
+		slog.Error("Seeding failed", slog.Any("error", err))
+		os.Exit(1)
 	}
 
-	log.Println("Database migration and seeding completed successfully!")
+	slog.Info("Database migration and seeding completed successfully!")
 }
