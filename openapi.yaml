@@ -27,6 +27,14 @@ paths:
                   message:
                     type: string
                     example: DCD database is healthy
+        '500':
+          description: Internal database error or server down
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "DCD database is unhealthy"
 
   /api/v1/ping:
     get:
@@ -59,6 +67,23 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ServicePackage'
+              example:
+                - id: 1
+                  slug: "deep-clean-valet"
+                  name: "Deep Clean Valet"
+                  category: "VALETING"
+                  base_price: 140.00
+                  duration_min: 240
+                  description: "A full interior and exterior reset — every panel, vent and seam."
+                  created_at: "2026-08-27T11:25:36Z"
+        '500':
+          description: Failed to retrieve services
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Failed to retrieve services"
 
   /api/v1/services/{slug}:
     get:
@@ -78,12 +103,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServicePackage'
+              example:
+                id: 6
+                slug: "paint-protection-film"
+                name: "Paint Protection Film (PPF)"
+                category: "PROTECTION"
+                base_price: 0.00
+                duration_min: 0
+                description: "SunTek film that shields paint from stone chips and scratches."
+                subtypes:
+                  - id: 10
+                    parent_id: 6
+                    slug: "ppf-front-end"
+                    name: "Front End Coverage"
+                    category: "PROTECTION"
+                    base_price: 1395.00
+                    duration_min: 480
+                    description: "Protects high-impact areas: front bumper, hood, fenders, and mirrors."
+                    created_at: "2026-08-27T11:25:36Z"
+                created_at: "2026-08-27T11:25:36Z"
         '404':
           description: Service not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Service not found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Failed to retrieve service"
 
   /api/v1/reservations:
     post:
@@ -102,18 +156,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Reservation'
+              example:
+                id: 1
+                name: "John Doe"
+                contact: "john@example.com"
+                service: "Deep Clean Valet"
+                date: "2026-09-01T10:00:00Z"
+                message: "Needs interior detailing"
+                created_at: "2026-08-27T11:31:49.983682Z"
+                updated_at: "2026-08-27T11:31:49.983682Z"
         '400':
           description: Invalid input parameters
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Key: 'CreateReservationRequest.Name' Error:Field validation for 'Name' failed on the 'required' tag"
+        '409':
+          description: Timeslot conflict or duplicate customer booking
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                duplicateBooking:
+                  summary: Duplicate booking by same client
+                  value:
+                    error: "reservation already exists for this client at this time"
+                slotTaken:
+                  summary: Timeslot already reserved
+                  value:
+                    error: "timeslot is already reserved"
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Failed to store reservation"
 
     get:
       summary: List reservations (public)
@@ -127,6 +209,17 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PublicReservation'
+              example:
+                - date: "2026-09-01T10:00:00Z"
+                - date: "2026-09-05T14:00:00Z"
+        '500':
+          description: Failed to retrieve public reservations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Failed to retrieve public reservations"
 
   /api/v1/admin/reservations:
     get:
@@ -143,12 +236,31 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Reservation'
+              example:
+                - id: 1
+                  name: "John Doe"
+                  contact: "john@example.com"
+                  service: "Deep Clean Valet"
+                  date: "2026-09-01T10:00:00Z"
+                  message: "Needs interior detailing"
+                  created_at: "2026-08-27T11:31:49.983682Z"
+                  updated_at: "2026-08-27T11:31:49.983682Z"
         '401':
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Unauthorized"
+        '500':
+          description: Failed to retrieve admin reservations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Failed to retrieve admin reservations"
 
 components:
   securitySchemes:
