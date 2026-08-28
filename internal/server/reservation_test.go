@@ -106,6 +106,40 @@ func TestCreateReservationHandler(t *testing.T) {
 				}
 			},
 		},
+		{
+			name: "duplicate reservation conflict",
+			body: `{"name":"John Doe","contact":"john@example.com","service":"Deep Clean Valet","date":"2026-09-01T10:00:00Z"}`,
+			mockSetup: func() *mockReservationService {
+				return &mockReservationService{
+					createReservationFunc: func(ctx context.Context, input service.CreateReservationInput) (*database.Reservation, error) {
+						return nil, service.ErrDuplicateReservation
+					},
+				}
+			},
+			expectedStatus: http.StatusConflict,
+			verifyBody: func(t *testing.T, body string) {
+				if !strings.Contains(body, service.ErrDuplicateReservation.Error()) {
+					t.Errorf("expected duplicate error, got %s", body)
+				}
+			},
+		},
+		{
+			name: "timeslot taken conflict",
+			body: `{"name":"John Doe","contact":"john@example.com","service":"Deep Clean Valet","date":"2026-09-01T10:00:00Z"}`,
+			mockSetup: func() *mockReservationService {
+				return &mockReservationService{
+					createReservationFunc: func(ctx context.Context, input service.CreateReservationInput) (*database.Reservation, error) {
+						return nil, service.ErrSlotTaken
+					},
+				}
+			},
+			expectedStatus: http.StatusConflict,
+			verifyBody: func(t *testing.T, body string) {
+				if !strings.Contains(body, service.ErrSlotTaken.Error()) {
+					t.Errorf("expected slot taken error, got %s", body)
+				}
+			},
+		},
 	}
 
 	for _, tt := range tests {

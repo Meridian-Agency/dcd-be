@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 )
@@ -56,6 +57,40 @@ func TestReservationService(t *testing.T) {
 		_, err := svc.CreateReservation(ctx, input)
 		if err == nil {
 			t.Error("expected error for invalid date format, got nil")
+		}
+	})
+
+	t.Run("CreateReservation - Duplicate and Slot Taken Conflicts", func(t *testing.T) {
+		dbSrv3 := setupTestDB(t)
+		svc3 := NewReservationService(dbSrv3)
+
+		input1 := CreateReservationInput{
+			Name:    "John Doe",
+			Contact: "john@example.com",
+			Service: "Deep Clean Valet",
+			Date:    "2026-09-05T14:00:00Z",
+		}
+		_, err := svc3.CreateReservation(ctx, input1)
+		if err != nil {
+			t.Fatalf("failed to create first reservation: %v", err)
+		}
+
+		// Try duplicate (same customer, same time)
+		_, err = svc3.CreateReservation(ctx, input1)
+		if !errors.Is(err, ErrDuplicateReservation) {
+			t.Errorf("expected ErrDuplicateReservation, got %v", err)
+		}
+
+		// Try slot conflict (different customer, same time)
+		input2 := CreateReservationInput{
+			Name:    "Jane Doe",
+			Contact: "jane@example.com",
+			Service: "Maintenance Valet",
+			Date:    "2026-09-05T14:00:00Z",
+		}
+		_, err = svc3.CreateReservation(ctx, input2)
+		if !errors.Is(err, ErrSlotTaken) {
+			t.Errorf("expected ErrSlotTaken, got %v", err)
 		}
 	})
 

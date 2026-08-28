@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"net/http"
 
 	"dcd-be/internal/service"
@@ -33,6 +34,10 @@ func (s *Server) createReservationHandler(c *gin.Context) {
 
 	res, err := s.reservationService.CreateReservation(c.Request.Context(), reservationInput)
 	if err != nil {
+		if errors.Is(err, service.ErrDuplicateReservation) || errors.Is(err, service.ErrSlotTaken) {
+			_ = c.Error(NewAppError(http.StatusConflict, err.Error(), err))
+			return
+		}
 		_ = c.Error(NewAppError(http.StatusInternalServerError, "Failed to store reservation", err))
 		return
 	}

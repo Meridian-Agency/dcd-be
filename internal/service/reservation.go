@@ -2,10 +2,18 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
 	"dcd-be/internal/database"
+
+	"gorm.io/gorm"
+)
+
+var (
+	ErrDuplicateReservation = errors.New("reservation already exists for this client at this time")
+	ErrSlotTaken           = errors.New("timeslot is already reserved")
 )
 
 type ReservationService interface {
@@ -38,6 +46,18 @@ func (s *reservationService) CreateReservation(ctx context.Context, input Create
 	parsedDate, err := time.Parse(time.RFC3339, input.Date)
 	if err != nil {
 		return nil, fmt.Errorf("invalid date format: %w", err)
+	}
+
+	// Check if slot is already taken or is a duplicate
+	var existing database.Reservation
+	err = s.db.GetDB(ctx).Where("date = ?", parsedDate).First(&existing).Error
+	if err == nil {
+		if existing.Name == input.Name && existing.Contact == input.Contact {
+			return nil, ErrDuplicateReservation
+		}
+		return nil, ErrSlotTaken
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, fmt.Errorf("failed to check existing reservation: %w", err)
 	}
 
 	reservation := database.Reservation{
